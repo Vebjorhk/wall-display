@@ -1,1 +1,51 @@
 @import "tailwindcss";
+
+/* ── Dark theme (default) ── */
+:root {
+  --app-bg: #1e1f27;
+  --card-bg: #2a2b33;
+  --card-header-bg: #252630;
+  --card-border: #35363f;
+  --text-primary: #e8eaff;
+  --text-secondary: #7b7e9a;
+  --text-muted: #3a3b47;
+}
+
+/* ── Light theme ── */
+:root[data-theme="light"] {
+  --app-bg: #f8f9fc;
+  --card-bg: #ffffff;
+  --card-header-bg: #f2f3f8;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --text-primary: #1a1c3d;
+  --text-secondary: #6b6e8a;
+  --text-muted: #c0c3d6;
+}
+
+/* ── Pulse glow animation for urgency indicator ── */
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 3px 1px var(--glow-color, transparent);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 6px 2px var(--glow-color, transparent);
+  }
+}
+
+/* ── Departure exit animation ── */
+@keyframes row-exit {
+  0%   { opacity: 1; transform: translateX(0);     max-height: 80px; }
+  50%  { opacity: 0; transform: translateX(-16px);  max-height: 80px; }
+  100% { opacity: 0; transform: translateX(-16px);  max-height: 0; padding-top: 0; padding-bottom: 0; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-row-exit {
+  animation: row-exit 0.6s ease-in-out forwards;
+  overflow: hidden;
+}
