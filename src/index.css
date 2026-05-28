@@ -10,6 +10,12 @@
   --text-primary: #e8eaff;
   --text-secondary: #7b7e9a;
   --text-muted: #3a3b47;
+
+  --uv-low:      #3EA72D;
+  --uv-moderate: #FFF300;
+  --uv-high:     #F18B00;
+  --uv-veryhigh: #E53210;
+  --uv-extreme:  #B567A4;
 }
 
 /* ── Light theme ── */
@@ -21,6 +27,12 @@
   --text-primary: #1a1c3d;
   --text-secondary: #6b6e8a;
   --text-muted: #c0c3d6;
+
+  --uv-low:      #2d8a1e;
+  --uv-moderate: #b89800;
+  --uv-high:     #c97200;
+  --uv-veryhigh: #c02008;
+  --uv-extreme:  #7a3a8a;
 }
 
 /* ── Pulse glow animation for urgency indicator ── */
