@@ -1,5 +1,5 @@
 // Change to 'http://localhost:8000' before committing
-const MONITORING_BASE = 'http://192.168.0.116:8000'
+const MONITORING_BASE = 'http://localhost:8000'
 
 export interface SystemMetrics {
   cpu: {

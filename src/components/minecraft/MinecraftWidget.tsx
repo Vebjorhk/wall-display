@@ -108,21 +108,23 @@ export function MinecraftWidget({ status }: { status: MinecraftStatus | null }) 
   return (
     <div className="rounded-xl overflow-hidden" style={{ border: '2px solid rgba(0,0,0,0.4)' }}>
       {/* Header — grass block top */}
-      <div className="flex items-center gap-2.5 px-4 py-3" style={GRASS_BG}>
+      <div className="flex items-start gap-2.5 px-4 py-3" style={GRASS_BG}>
         <StatusOrb online={online} />
-        <span
-          className="flex-1 truncate"
-          style={{ fontFamily: MC_FONT, color: 'white', fontSize: '0.6rem', lineHeight: 1.4, textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}
-        >
-          {motd}
-        </span>
-        {online && version && (
-          <span style={{ fontFamily: MC_FONT, color: 'rgba(255,255,255,0.7)', fontSize: '0.5rem', flexShrink: 0, textShadow: '1px 1px 0 rgba(0,0,0,0.5)' }}>
-            {version}
+        <div className="flex flex-col flex-1 min-w-0" style={{ gap: '0.25rem' }}>
+          <span
+            className="truncate"
+            style={{ fontFamily: MC_FONT, color: 'white', fontSize: '0.6rem', textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}
+          >
+            {motd}
           </span>
-        )}
+          {online && version && (
+            <span style={{ fontFamily: MC_FONT, color: 'rgba(255,255,255,0.75)', fontSize: '0.45rem', textShadow: '1px 1px 0 rgba(0,0,0,0.5)' }}>
+              Running {version}
+            </span>
+          )}
+        </div>
         {online && (
-          <span style={{ fontFamily: MC_FONT, color: 'rgba(255,255,255,0.8)', fontSize: '0.5rem', flexShrink: 0, textShadow: '1px 1px 0 rgba(0,0,0,0.5)' }}>
+          <span style={{ fontFamily: MC_FONT, color: 'white', fontSize: '0.65rem', flexShrink: 0, textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}>
             {playersOnline}/{playersMax}
           </span>
         )}
@@ -143,6 +145,8 @@ export function MinecraftWidget({ status }: { status: MinecraftStatus | null }) 
           </span>
         </div>
       )}
+
+
     </div>
   )
 }
