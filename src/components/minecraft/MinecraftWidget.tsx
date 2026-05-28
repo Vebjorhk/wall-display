@@ -6,40 +6,59 @@ function stripFormattingCodes(text: string): string {
   return text.replace(/§[0-9a-fk-or]/gi, '')
 }
 
+// 7×7 pixel-art circle: shade 1=border, 2=fill, 3=highlight
+const ORB_PIXELS: [number, number, 1 | 2 | 3][] = [
+  [2,0,1],[3,0,1],[4,0,1],
+  [1,1,1],[2,1,3],[3,1,3],[4,1,2],[5,1,1],
+  [0,2,1],[1,2,3],[2,2,3],[3,2,2],[4,2,2],[5,2,2],[6,2,1],
+  [0,3,1],[1,3,2],[2,3,2],[3,3,2],[4,3,2],[5,3,2],[6,3,1],
+  [0,4,1],[1,4,2],[2,4,2],[3,4,2],[4,4,2],[5,4,2],[6,4,1],
+  [1,5,1],[2,5,2],[3,5,2],[4,5,2],[5,5,1],
+  [2,6,1],[3,6,1],[4,6,1],
+]
+
 function StatusOrb({ online }: { online: boolean }) {
+  const border    = online ? '#1a5200' : '#5a0000'
+  const fill      = online ? '#55aa00' : '#bb2222'
+  const highlight = online ? '#88dd22' : '#dd5555'
+
   return (
-    <div
-      style={{
-        width: 14,
-        height: 14,
-        flexShrink: 0,
-        background: online ? '#55AA00' : '#AA0000',
-        boxShadow: online
-          ? 'inset -2px -2px 0 rgba(0,0,0,0.35), inset 2px 2px 0 rgba(255,255,255,0.2), 0 0 6px rgba(85,170,0,0.5)'
-          : 'inset -2px -2px 0 rgba(0,0,0,0.35), inset 2px 2px 0 rgba(255,255,255,0.1)',
-        imageRendering: 'pixelated',
-      }}
-    />
+    <svg
+      width={16}
+      height={16}
+      viewBox="0 0 7 7"
+      style={{ imageRendering: 'pixelated', flexShrink: 0 }}
+    >
+      {ORB_PIXELS.map(([c, r, shade]) => (
+        <rect
+          key={`${c}-${r}`}
+          x={c} y={r}
+          width={1} height={1}
+          fill={shade === 1 ? border : shade === 3 ? highlight : fill}
+        />
+      ))}
+    </svg>
   )
 }
+
 
 function PlayerRow({ name }: { name: string }) {
   const avatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/32`
 
   return (
     <div
-      className="flex items-center gap-3 px-4 py-1.5"
+      className="flex items-center gap-3 px-4 py-2"
       style={{ borderTop: '1px solid var(--card-border)' }}
     >
       <img
         src={avatarUrl}
         alt={name}
-        width={24}
-        height={24}
+        width={28}
+        height={28}
         style={{ imageRendering: 'pixelated', flexShrink: 0 }}
         onError={(e) => { (e.currentTarget as HTMLImageElement).src = STEVE_URL }}
       />
-      <span style={{ color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: 500, transition: 'color 5s ease' }}>
+      <span style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 500, transition: 'color 5s ease' }}>
         {name}
       </span>
     </div>
@@ -85,7 +104,7 @@ export function MinecraftWidget({ status }: { status: MinecraftStatus | null }) 
       {online && players.length === 0 && (
         <div
           className="px-4 py-2"
-          style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', transition: 'color 5s ease' }}
+          style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', transition: 'color 5s ease' }}
         >
           No players online
         </div>

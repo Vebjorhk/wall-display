@@ -1,3 +1,4 @@
+import platform
 import time
 
 import psutil
@@ -5,6 +6,17 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mcstatus import JavaServer
+
+
+def _get_os_name() -> str:
+    try:
+        with open('/etc/os-release') as f:
+            for line in f:
+                if line.startswith('PRETTY_NAME='):
+                    return line.split('=', 1)[1].strip().strip('"')
+    except OSError:
+        pass
+    return f"{platform.system()} {platform.release()}"
 
 app = FastAPI()
 
@@ -61,6 +73,7 @@ def get_system():
             "download_mbs": round(download_mbs, 3),
         },
         "uptime_seconds": uptime_seconds,
+        "os_name": _get_os_name(),
     }
 
 
