@@ -94,6 +94,7 @@ def get_minecraft():
             "players": players,
             "latency_ms": round(status.latency, 1),
             "motd": motd,
+            "version": status.version.name,
         }
     except Exception:
         return {"online": False}

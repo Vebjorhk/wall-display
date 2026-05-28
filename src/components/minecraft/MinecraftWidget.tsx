@@ -1,10 +1,49 @@
+import type { CSSProperties } from 'react'
 import type { MinecraftStatus } from '../../api/monitoring.ts'
 
+const MC_FONT = "'Press Start 2P', monospace"
 const STEVE_URL = 'https://mc-heads.net/avatar/steve/32'
 
 function stripFormattingCodes(text: string): string {
   return text.replace(/§[0-9a-fk-or]/gi, '')
 }
+
+function makeTileBg(pixels: string[][], size: number): CSSProperties {
+  const n = pixels.length
+  const rects = pixels
+    .flatMap((row, r) => row.map((fill, c) => `<rect x="${c}" y="${r}" width="1" height="1" fill="${fill}"/>`))
+    .join('')
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${n}" height="${n}" viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges">${rects}</svg>`
+  return {
+    backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
+    backgroundSize: `${size}px ${size}px`,
+    imageRendering: 'pixelated',
+  }
+}
+
+const G1 = '#7fb238', G2 = '#5c9929', G3 = '#8bc34a'
+const GRASS_BG = makeTileBg([
+  [G2,G1,G3,G1,G2,G1,G3,G1],
+  [G1,G3,G1,G2,G1,G3,G1,G2],
+  [G3,G1,G2,G1,G3,G1,G2,G1],
+  [G1,G2,G1,G3,G1,G2,G1,G3],
+  [G2,G1,G3,G1,G2,G1,G3,G1],
+  [G1,G3,G1,G2,G1,G3,G1,G2],
+  [G3,G1,G2,G1,G3,G1,G2,G1],
+  [G1,G2,G1,G3,G1,G2,G1,G3],
+], 32)
+
+const D1 = '#866043', D2 = '#7a5435', D3 = '#966c4f'
+const DIRT_BG = makeTileBg([
+  [D1,D3,D1,D1,D3,D1,D1,D1],
+  [D1,D1,D1,D2,D1,D1,D3,D1],
+  [D3,D1,D2,D1,D1,D3,D1,D1],
+  [D1,D1,D1,D3,D1,D1,D1,D2],
+  [D1,D2,D1,D1,D1,D2,D1,D1],
+  [D1,D1,D3,D1,D1,D1,D3,D1],
+  [D3,D1,D1,D1,D2,D1,D1,D1],
+  [D1,D1,D1,D3,D1,D1,D1,D3],
+], 32)
 
 // 7×7 pixel-art circle: shade 1=border, 2=fill, 3=highlight
 const ORB_PIXELS: [number, number, 1 | 2 | 3][] = [
@@ -23,17 +62,11 @@ function StatusOrb({ online }: { online: boolean }) {
   const highlight = online ? '#88dd22' : '#dd5555'
 
   return (
-    <svg
-      width={16}
-      height={16}
-      viewBox="0 0 7 7"
-      style={{ imageRendering: 'pixelated', flexShrink: 0 }}
-    >
+    <svg width={16} height={16} viewBox="0 0 7 7" style={{ imageRendering: 'pixelated', flexShrink: 0 }}>
       {ORB_PIXELS.map(([c, r, shade]) => (
         <rect
           key={`${c}-${r}`}
-          x={c} y={r}
-          width={1} height={1}
+          x={c} y={r} width={1} height={1}
           fill={shade === 1 ? border : shade === 3 ? highlight : fill}
         />
       ))}
@@ -41,14 +74,13 @@ function StatusOrb({ online }: { online: boolean }) {
   )
 }
 
-
 function PlayerRow({ name }: { name: string }) {
   const avatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(name)}/32`
 
   return (
     <div
-      className="flex items-center gap-3 px-4 py-2"
-      style={{ borderTop: '1px solid var(--card-border)' }}
+      className="flex items-center gap-3 px-4 py-2.5"
+      style={{ ...DIRT_BG, borderTop: '2px solid rgba(0,0,0,0.25)' }}
     >
       <img
         src={avatarUrl}
@@ -58,7 +90,7 @@ function PlayerRow({ name }: { name: string }) {
         style={{ imageRendering: 'pixelated', flexShrink: 0 }}
         onError={(e) => { (e.currentTarget as HTMLImageElement).src = STEVE_URL }}
       />
-      <span style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 500, transition: 'color 5s ease' }}>
+      <span style={{ fontFamily: MC_FONT, color: 'white', fontSize: '0.65rem', lineHeight: 1.4, textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}>
         {name}
       </span>
     </div>
@@ -71,42 +103,44 @@ export function MinecraftWidget({ status }: { status: MinecraftStatus | null }) 
   const players = status?.players ?? []
   const playersOnline = status?.players_online ?? 0
   const playersMax = status?.players_max ?? 0
+  const version = status?.version
 
   return (
-    <div
-      className="rounded-xl overflow-hidden"
-      style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', transition: 'background-color 5s ease' }}
-    >
-      {/* Header */}
-      <div
-        className="flex items-center gap-2.5 px-4 py-3"
-        style={{ background: 'var(--card-header-bg)', transition: 'background-color 5s ease' }}
-      >
+    <div className="rounded-xl overflow-hidden" style={{ border: '2px solid rgba(0,0,0,0.4)' }}>
+      {/* Header — grass block top */}
+      <div className="flex items-center gap-2.5 px-4 py-3" style={GRASS_BG}>
         <StatusOrb online={online} />
         <span
           className="flex-1 truncate"
-          style={{ color: 'var(--text-primary)', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.01em', transition: 'color 5s ease' }}
+          style={{ fontFamily: MC_FONT, color: 'white', fontSize: '0.6rem', lineHeight: 1.4, textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}
         >
           {motd}
         </span>
+        {online && version && (
+          <span style={{ fontFamily: MC_FONT, color: 'rgba(255,255,255,0.7)', fontSize: '0.5rem', flexShrink: 0, textShadow: '1px 1px 0 rgba(0,0,0,0.5)' }}>
+            {version}
+          </span>
+        )}
         {online && (
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', flexShrink: 0, transition: 'color 5s ease' }}>
+          <span style={{ fontFamily: MC_FONT, color: 'rgba(255,255,255,0.8)', fontSize: '0.5rem', flexShrink: 0, textShadow: '1px 1px 0 rgba(0,0,0,0.5)' }}>
             {playersOnline}/{playersMax}
           </span>
         )}
       </div>
 
-      {/* Player list */}
+      {/* Player list — dirt block */}
       {online && players.length > 0 && players.map((name) => (
         <PlayerRow key={name} name={name} />
       ))}
 
       {online && players.length === 0 && (
         <div
-          className="px-4 py-2"
-          style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', transition: 'color 5s ease' }}
+          className="px-4 py-3"
+          style={{ ...DIRT_BG, borderTop: '2px solid rgba(0,0,0,0.25)' }}
         >
-          No players online
+          <span style={{ fontFamily: MC_FONT, color: 'rgba(255,255,255,0.6)', fontSize: '0.55rem', textShadow: '1px 1px 0 rgba(0,0,0,0.5)' }}>
+            No players online
+          </span>
         </div>
       )}
     </div>

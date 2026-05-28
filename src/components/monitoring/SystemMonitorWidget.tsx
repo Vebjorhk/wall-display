@@ -68,10 +68,24 @@ export function SystemMonitorWidget({ metrics }: { metrics: SystemMetrics | null
     >
       {/* OS — leftmost */}
       <div className="flex items-center gap-2 px-5 py-4">
-        <StatLabel>OS</StatLabel>
-        <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 400, whiteSpace: 'nowrap', transition: 'color 5s ease' }}>
-          {metrics?.os_name ?? '—'}
-        </span>
+        {(() => {
+          const raw = metrics?.os_name ?? '—'
+          const spaceIdx = raw.indexOf(' ')
+          const name = spaceIdx === -1 ? raw : raw.slice(0, spaceIdx)
+          const version = spaceIdx === -1 ? '' : raw.slice(spaceIdx + 1)
+          return (
+            <div className="flex flex-col" style={{ lineHeight: 1.2 }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 500, transition: 'color 5s ease' }}>
+                {name}
+              </span>
+              {version && (
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', fontWeight: 400, transition: 'color 5s ease' }}>
+                  {version}
+                </span>
+              )}
+            </div>
+          )
+        })()}
       </div>
       <Divider />
 
