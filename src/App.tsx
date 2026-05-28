@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react'
 import { TransitBoard } from './components/transit/TransitBoard.tsx'
 import { WeatherWidget } from './components/weather/WeatherWidget.tsx'
 import { CountdownWidget } from './components/CountdownWidget.tsx'
+import { MinecraftWidget } from './components/minecraft/MinecraftWidget.tsx'
+import { SystemMonitorWidget } from './components/monitoring/SystemMonitorWidget.tsx'
 import { useTheme } from './hooks/useTheme.ts'
+import { useMinecraftStatus } from './hooks/useMinecraftStatus.ts'
+import { useSystemMetrics } from './hooks/useSystemMetrics.ts'
 
 const BLINDERN_STOP_ID = 'NSR:StopPlace:6332'
 const LAT = 59.940
@@ -70,6 +74,8 @@ function DigitalClock({ now }: { now: number }) {
 export default function App() {
   const theme = useTheme(LAT, LON)
   const [now, setNow] = useState(Date.now())
+  const { status: mcStatus } = useMinecraftStatus()
+  const { metrics } = useSystemMetrics()
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -109,6 +115,7 @@ export default function App() {
               </div>
             ))}
           </div>
+          <SystemMonitorWidget metrics={metrics} />
         </div>
 
         {/* ── Right — Weather, countdowns, clock ── */}
@@ -118,9 +125,12 @@ export default function App() {
             <CountdownWidget label="GTA VI"     targetDate={GTA6}  now={now} emoji="🎮" />
             <CountdownWidget label="Hytteturen" targetDate={HYTTE} now={now} emoji="🏕️" />
           </div>
-          <div className="flex-1 flex items-center justify-center">
-            <DigitalClock now={now} />
-          </div>
+          <MinecraftWidget status={mcStatus} />
+          {!(mcStatus?.online && (mcStatus.players_online ?? 0) >= 5) && (
+            <div className="flex-1 flex items-center justify-center">
+              <DigitalClock now={now} />
+            </div>
+          )}
         </div>
 
       </div>

@@ -70,12 +70,17 @@ def get_minecraft():
         server = JavaServer.lookup("localhost")
         status = server.status()
         players = [p.name for p in status.players.sample] if status.players.sample else []
+        try:
+            motd = status.motd.to_plain()
+        except AttributeError:
+            motd = str(getattr(status, 'description', ''))
         return {
             "online": True,
             "players_online": status.players.online,
             "players_max": status.players.max,
             "players": players,
             "latency_ms": round(status.latency, 1),
+            "motd": motd,
         }
     except Exception:
         return {"online": False}
